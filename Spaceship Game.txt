@@ -1,0 +1,134 @@
+-fix pause shooting
+-adaptive difficulty
+-enemies, power ups, collectibles, bosses
+
+
+-take sound code from LL
+
+public class MenuMusic : MonoBehaviour {
+
+    static bool onMenu = false;
+    public AudioSource audio;
+
+	// Use this for initialization
+	void Start () {
+	
+	}
+
+    void Awake()
+    {
+        if (!onMenu)
+        {
+            audio.Play();
+            DontDestroyOnLoad(gameObject);
+            onMenu = true;
+
+        }
+    }
+
+	// Update is called once per frame
+	void Update () 
+    {
+        if (Application.loadedLevel == 4)
+        {
+            audio.Stop();
+            onMenu = false;
+        }
+
+	}
+}
+
+
+
+
+
+
+
+
+SoundEffects.cs
+
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+public class SoundEffects : MonoBehaviour 
+{
+	public static SoundEffects instance;
+	public Dictionary<string, AudioClip> sounds = new Dictionary<string, AudioClip>(); 
+
+	//"imported" sounds
+	public AudioClip jumpSFX;
+	public AudioClip collectSFX;
+	public AudioClip collectcoinSFX;
+	public AudioClip landSFX;
+	public AudioClip deathSFX;
+	
+	public AudioClip lifesaverSFX;
+	public AudioClip magnetSFX;
+	public AudioClip healthfreezeSFX;
+	public AudioClip jumpboostSFX;
+    public AudioClip evolveSFX;
+	
+	public static SoundEffects getInstance()
+	{
+		return instance;
+	}
+
+	// Use this for initialization
+	void Start () 
+	{
+		instance = this;
+		sounds ["jump"] = jumpSFX;
+		sounds ["collect"] = collectSFX;
+		sounds ["collectcoin"] = collectcoinSFX;
+		sounds ["land"] = landSFX;
+		sounds ["death"] = deathSFX;
+		sounds ["lifesaver"] = lifesaverSFX;
+		sounds ["magnet"] = magnetSFX;
+		sounds ["healthfreeze"] = healthfreezeSFX;
+		sounds ["jumpboost"] = jumpboostSFX;
+        sounds ["evolve"] = evolveSFX;
+	}
+
+	//method use for playing the sounds
+	public void play(string s)
+	{
+		GetComponent<AudioSource>().PlayOneShot (sounds [s]);
+	}
+
+}
+
+
+
+Collectible.cs
+
+public class Collectible : MonoBehaviour {
+
+	// Use this for initialization
+	void Start () {
+		gameObject.tag = "PowerUp";
+	}
+
+	void OnTriggerEnter2D(Collider2D other)
+	{
+		if (other.tag == "Player") 
+		{
+			playSound();
+			doAction();
+			Destroy (this.gameObject); // make the object dissappear as if they are collected
+		}
+	}
+
+	public virtual void playSound()
+	{
+		SoundEffects.getInstance().play("collect"); // play collectSFX when collide with the player
+	}
+
+	public virtual void doAction()
+	{
+
+	}
+}
+
+
+
